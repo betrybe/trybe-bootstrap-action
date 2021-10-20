@@ -1,6 +1,6 @@
 name: "Trybe Image Builder"
 author: "Trybe"
-description: "Esta GitHub Action permite realizar build de imagens obtendo variáveis de ambiente como argumentos de build."
+description: "Action utilizada para configurar o ambiente para executar a integração contínua das aplicações da Trybe."
 inputs:
   environment:
     description: "Ambiente de destino da aplicação."
