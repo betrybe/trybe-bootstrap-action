@@ -1,0 +1,20 @@
+name: "Trybe Image Builder"
+author: "Trybe"
+description: "Esta GitHub Action permite realizar build de imagens obtendo variáveis de ambiente como argumentos de build."
+inputs:
+  environment:
+    description: "Ambiente de destino da aplicação."
+    required: true
+  githubToken:
+    description: "Personal Acess Token para acessos a sistemas do GitHub."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - id: job
+      shell: bash
+      run: ${{ github.action_path }}/bootstrap.sh
+      env:
+        ENVIRONMENT: ${{ inputs.environment }}
+        GITHUB_TOKEN: ${{ inputs.githubToken }}
