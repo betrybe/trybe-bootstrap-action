@@ -37,6 +37,7 @@ if [[ "$ENVIRONMENT" != "staging" ]]; then
 fi
 
 # Setting environment variables.
+echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
 echo "VERSION=$VERSION" >> $GITHUB_ENV
 echo "CHART_FILE=$CHART_FILE" >> $GITHUB_ENV
 echo "VALUES_FILE=$VALUES_FILE" >> $GITHUB_ENV
