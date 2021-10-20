@@ -41,7 +41,7 @@ echo "VERSION=$VERSION" >> $GITHUB_ENV
 echo "CHART_FILE=$CHART_FILE" >> $GITHUB_ENV
 echo "VALUES_FILE=$VALUES_FILE" >> $GITHUB_ENV
 
-MSG='
+echo '
  _____            _
 /__   \_ __ _   _| |__   ___
   / /\/ `__| | | | `_ \ / _ \
@@ -53,8 +53,4 @@ MSG='
  / /_)/ |/ _` | __/ _` | |_ / _ \| `__| `_ ` _ \ / _` |
 / ___/| | (_| | || (_| |  _| (_) | |  | | | | | | (_| |
 \/    |_|\__,_|\__\__,_|_|  \___/|_|  |_| |_| |_|\__,_|
-
-Deploying to:  > $ENVIRONMENT <
-Version:       > $VERSION <
 '
-echo $MSG | envsubst
