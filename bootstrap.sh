@@ -29,7 +29,7 @@ else
 fi
 
 # Helm Linter
-helm lint chart/ --strict --values chart/$VALUES_FILE
+helm lint chart/ --strict --values $VALUES_FILE
 
 # Generate a helm "package" for preview apps and production
 if [[ "$ENVIRONMENT" != "staging" ]]; then
