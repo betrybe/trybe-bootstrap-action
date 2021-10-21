@@ -16,6 +16,9 @@ fi
 if [[ "$ENVIRONMENT" == "preview-app" ]]; then
   VERSION=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | tr [:upper:] [:lower:])
   VALUES_FILE="chart/values-preview-apps.yaml"
+  
+  # default hostname for preview-apps
+  PREVIEW_APP_HOSTNAME=$REPOSITORY-preview-app-$VERSION.betrybe.dev 
 
 elif [[ "$ENVIRONMENT" == "staging" ]]; then
   VERSION="staging"
@@ -41,6 +44,7 @@ echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
 echo "VERSION=$VERSION" >> $GITHUB_ENV
 echo "CHART_FILE=$CHART_FILE" >> $GITHUB_ENV
 echo "VALUES_FILE=$VALUES_FILE" >> $GITHUB_ENV
+echo "PREVIEW_APP_HOSTNAME=$PREVIEW_APP_HOSTNAME" >> $GITHUB_ENV
 
 echo '
  _____            _
