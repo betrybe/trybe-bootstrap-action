@@ -3,11 +3,11 @@ set -e
 set -x
 
 # Setup Helm if needed.
-HELM=`command -v helm`
-if [[ "$HELM" == "" ]]; then
+#HELM=`command -v helm`
+#if [[ "$HELM" == "" ]]; then
   # sudo snap install helm --classic
   sudo curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-fi
+#fi
 
 # Ensure that $GITHUB_TOKEN exists for the remaining of the workflow steps.
 if [[ "$GITHUB_TOKEN" != "" ]]; then
