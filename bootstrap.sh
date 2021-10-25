@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-set +x
+set -x
 
 # Setup Helm if needed.
 HELM=`command -v helm`
