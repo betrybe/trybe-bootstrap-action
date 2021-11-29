@@ -25,6 +25,11 @@ elif [[ "$ENVIRONMENT" == "staging" ]]; then
   VALUES_FILE="chart/values-staging.yaml"
   CHART_FILE="chart/"
 
+elif [[ "$ENVIRONMENT" == "homologation" ]]; then
+  VERSION="homologation"
+  VALUES_FILE="chart/values-homologation.yaml"
+  CHART_FILE="chart/"
+
 else
   VERSION=${GITHUB_SHA:0:9}
   VALUES_FILE="chart/values-production.yaml"
@@ -35,7 +40,7 @@ fi
 helm lint chart/ --strict --values $VALUES_FILE
 
 # Generate a helm "package" for preview apps and production
-if [[ "$ENVIRONMENT" != "staging" ]]; then
+if [[ "$ENVIRONMENT" == "preview-app" || "$ENVIRONMENT" == "production" ]]; then
   CHART_FILE=$(helm package chart/ --app-version=$VERSION | awk -F"/" '{print $NF}')
 fi
 
