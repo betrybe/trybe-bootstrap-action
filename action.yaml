@@ -1,20 +1,16 @@
-name: 'Trybe Image Builder'
-author: 'Trybe'
-description: 'Action utilizada para configurar o ambiente para executar a integração contínua das aplicações da Trybe.'
+name: "Trybe Image Builder"
+author: "Trybe"
+description: "Action utilizada para configurar o ambiente para executar a integração contínua das aplicações da Trybe."
 inputs:
   environment:
-    description: 'Ambiente de destino da aplicação.'
+    description: "Ambiente de destino da aplicação."
     required: true
   githubToken:
-    description: 'Personal Acess Token para acessos a sistemas do GitHub.'
+    description: "Personal Acess Token para acessos a sistemas do GitHub."
     required: true
-  prefixDir:
-    description: 'Subdiretório a ser iniciado, usado em monorepos.'
-    required: true
-    default: './'
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - id: job
       shell: bash
@@ -22,4 +18,3 @@ runs:
       env:
         ENVIRONMENT: ${{ inputs.environment }}
         GITHUB_TOKEN: ${{ inputs.githubToken }}
-        PREFIX_DIR: ${{ inputs.prefixDir }}
