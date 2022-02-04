@@ -1,56 +1,55 @@
 #!/bin/bash
 set -e
 
+# If the repository is a monorepo the envvar `$REPOSITORY` is the application subdir
+sub_dir="./"
+if [[ ! "${GITHUB_REPOSITORY#betrybe\/}" == "$REPOSITORY" ]]; then
+  sub_dir="$REPOSITORY"
+fi
+
 # Setup Helm if needed.
-HELM=`command -v helm`
-if [[ "$HELM" == "" ]]; then
+if [[ -z "$(command -v helm)" ]]; then
   sudo snap install helm --classic
 fi
 
 # Ensure that $GITHUB_TOKEN exists for the remaining of the workflow steps.
-if [[ "$GITHUB_TOKEN" != "" ]]; then
+if [[ ! -z "$GITHUB_TOKEN" ]]; then
   echo "GITHUB_TOKEN=$GITHUB_TOKEN" >> $GITHUB_ENV
 fi
 
 # Section: Set Version
+version=${GITHUB_SHA:0:9}
+values_file="$sub_dir/chart/values-production.yaml"
+chart_file=""
+preview_app_hostname=""
 if [[ "$ENVIRONMENT" == "preview-app" ]]; then
-  VERSION=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | tr [:upper:] [:lower:])
-  VALUES_FILE="chart/values-preview-apps.yaml"
-  
-  # default hostname for preview-apps
-  PREVIEW_APP_HOSTNAME=$REPOSITORY-preview-app-$VERSION.betrybe.dev 
+  version=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | tr [:upper:] [:lower:])
+  values_file="$sub_dir/chart/values-preview-apps.yaml"
 
-elif [[ "$ENVIRONMENT" == "staging" ]]; then
-  VERSION="staging"
-  VALUES_FILE="chart/values-staging.yaml"
-  CHART_FILE="chart/"
+  # Default hostname for preview-apps
+  preview_app_hostname=$REPOSITORY-preview-app-$version.betrybe.dev
 
-elif [[ "$ENVIRONMENT" == "homologation" ]]; then
-  VERSION="homologation"
-  VALUES_FILE="chart/values-homologation.yaml"
-  CHART_FILE="chart/"
+elif [[ "$ENVIRONMENT" == "staging" ]] || [[ "$ENVIRONMENT" == "homologation" ]]; then
+  version="$ENVIRONMENT"
+  values_file="$sub_dir/chart/values-$ENVIRONMENT.yaml"
+  chart_file="$sub_dir/chart/"
 
-else
-  VERSION=${GITHUB_SHA:0:9}
-  VALUES_FILE="chart/values-production.yaml"
-
+fi
+# Generate a helm "package" for preview apps and production
+if [[ "$ENVIRONMENT" == "preview-app" || "$ENVIRONMENT" == "production" ]]; then
+  chart_file=$(helm package $sub_dir/chart/ --app-version=$version | awk -F"/" '{print $NF}')
 fi
 
 # Helm Linter
-# helm lint chart/ --strict --values $VALUES_FILE FIX ME
-
-# Generate a helm "package" for preview apps and production
-if [[ "$ENVIRONMENT" == "preview-app" || "$ENVIRONMENT" == "production" ]]; then
-  CHART_FILE=$(helm package chart/ --app-version=$VERSION | awk -F"/" '{print $NF}')
-fi
+# helm lint $sub_dir/chart/ --strict --values $values_file FIX ME
 
 # Setting environment variables.
 echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
-echo "VERSION=$VERSION" >> $GITHUB_ENV
-echo "CHART_FILE=$CHART_FILE" >> $GITHUB_ENV
-echo "VALUES_FILE=$VALUES_FILE" >> $GITHUB_ENV
-echo "PREVIEW_APP_HOSTNAME=$PREVIEW_APP_HOSTNAME" >> $GITHUB_ENV
-
+echo "VERSION=$version" >> $GITHUB_ENV
+echo "CHART_FILE=$chart_file" >> $GITHUB_ENV
+echo "VALUES_FILE=$values_file" >> $GITHUB_ENV
+echo "PREVIEW_APP_HOSTNAME=$preview_app_hostname" >> $GITHUB_ENV
+echo "SECRET_SENTRY_RELEASE=$version" >> $GITHUB_ENV
 echo '
  _____            _
 /__   \_ __ _   _| |__   ___
