@@ -5,9 +5,12 @@ inputs:
   environment:
     description: "Ambiente de destino da aplicação."
     required: true
-  githubToken:
+  token:
     description: "Personal Acess Token para acessos a sistemas do GitHub."
-    required: true
+    required: false
+  githubToken:
+    description: "Depreciado, não usar."
+    required: false
 
 runs:
   using: "composite"
@@ -17,4 +20,4 @@ runs:
       run: ${{ github.action_path }}/bootstrap.sh
       env:
         ENVIRONMENT: ${{ inputs.environment }}
-        GITHUB_TOKEN: ${{ inputs.githubToken }}
+        BOOTSTRAP_TOKEN: ${{ inputs.token }}
