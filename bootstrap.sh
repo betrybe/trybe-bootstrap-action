@@ -18,7 +18,7 @@ if [[ ! -z "$GITHUB_TOKEN" ]]; then
 fi
 
 # Ensure that 'templates' folder is up-to-date
-git clone https://x-access-token:$GITHUB_TOKEN@github.com/betrybe/trybe-pipeline-template.git \
+git clone https://x-access-token:$GITHUB_TOKEN@github.com/betrybe/trybe-pipeline-template.git > /dev/null \
   && cp -fR trybe-pipeline-template/chart/templates chart/ \
   && echo "LIVE helm templates!" \
   || echo "STATIC helm templates!"
