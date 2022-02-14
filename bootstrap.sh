@@ -13,10 +13,12 @@ if [[ -z "$(command -v helm)" ]]; then
 fi
 
 # Ensure that 'templates' folder is up-to-date
-git clone https://x-access-token:$BOOTSTRAP_TOKEN@github.com/betrybe/trybe-pipeline-template.git &>/dev/null \
+git clone https://x-access-token:$BOOTSTRAP_TOKEN@github.com/betrybe/trybe-pipeline-template.git \
   && cp -fR trybe-pipeline-template/chart/templates chart/ \
   && echo "LIVE helm templates!" \
   || echo "STATIC helm templates!"
+
+exit 1
 
 # Section: Set Version
 version=${GITHUB_SHA:0:9}
