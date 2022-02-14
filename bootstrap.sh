@@ -12,10 +12,13 @@ if [[ -z "$(command -v helm)" ]]; then
   sudo snap install helm --classic
 fi
 
-# Ensure that $GITHUB_TOKEN exists for the remaining of the workflow steps.
-if [[ ! -z "$GITHUB_TOKEN" ]]; then
-  echo "GITHUB_TOKEN=$GITHUB_TOKEN" >> $GITHUB_ENV
-fi
+# Ensure that 'templates' folder is up-to-date
+echo "----------------------------"
+git clone https://x-access-token:$BOOTSTRAP_TOKEN@github.com/betrybe/trybe-pipeline-template.git \
+  && cp -fR trybe-pipeline-template/chart/templates $sub_dir/chart/ \
+  && echo "Using LIVE helm templates!" \
+  || echo "Using STATIC helm templates!"
+echo "----------------------------"
 
 # Section: Set Version
 version=${GITHUB_SHA:0:9}
