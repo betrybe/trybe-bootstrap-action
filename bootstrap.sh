@@ -17,6 +17,12 @@ if [[ ! -z "$GITHUB_TOKEN" ]]; then
   echo "GITHUB_TOKEN=$GITHUB_TOKEN" >> $GITHUB_ENV
 fi
 
+# Ensure that 'templates' folder is up-to-date
+echo "::group::Getting helm templates..."
+git clone https://x-access-token:$GITHUB_TOKEN@github.com/betrybe/trybe-pipeline-template.git
+cp -fR trybe-pipeline-template/chart/templates chart/
+echo "::endgroup::"
+
 # Section: Set Version
 version=${GITHUB_SHA:0:9}
 values_file="$sub_dir/chart/values-production.yaml"
