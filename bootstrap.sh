@@ -4,7 +4,9 @@ set -e
 # If the repository is a monorepo the envvar `$REPOSITORY` is the application subdir
 sub_dir="./"
 if [[ ! "${GITHUB_REPOSITORY#betrybe\/}" == "$REPOSITORY" ]]; then
+if [[ ! -z "$SKIP_CHECK" ]]; then
   sub_dir="$REPOSITORY"
+fi
 fi
 
 # Setup Helm if needed.
