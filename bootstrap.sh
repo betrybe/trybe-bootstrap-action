@@ -1,12 +1,11 @@
 #!/bin/bash
 set -e
 
-# If the repository is a monorepo the envvar `$REPOSITORY` is the application subdir
+# If the repository is a monorepo then the envvar `$PIPELINE_MODE` must
+# be set to "monorepo" in order to the pipeline work properly.
 sub_dir="./"
-if [[ ! "${GITHUB_REPOSITORY#betrybe\/}" == "$REPOSITORY" ]]; then
-if [[ -z "$SKIP_CHECK" ]]; then
+if [[ "$PIPELINE_MODE" == "monorepo" ]]; then
   sub_dir="$REPOSITORY"
-fi
 fi
 
 # Setup Helm if needed.
