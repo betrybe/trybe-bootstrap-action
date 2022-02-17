@@ -46,7 +46,7 @@ if [[ "$ENVIRONMENT" == "preview-app" || "$ENVIRONMENT" == "production" ]]; then
 fi
 
 # Helm Linter
-# helm lint $sub_dir/chart/ --strict --values $values_file FIX ME
+helm lint $sub_dir/chart/ --values $values_file
 
 # Setting environment variables.
 echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
