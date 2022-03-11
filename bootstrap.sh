@@ -5,7 +5,10 @@ set -e
 # be set to "monorepo" in order to the pipeline work properly.
 sub_dir="./"
 if [[ "$PIPELINE_MODE" == "monorepo" ]]; then
-  sub_dir="$REPOSITORY"
+  if [[ -z ${REPOSITORY_PATH} ]]; then
+    REPOSITORY_PATH=""
+  fi
+  sub_dir="$REPOSITORY_PATH$REPOSITORY"
 fi
 
 # Setup Helm if needed.
