@@ -11,10 +11,6 @@ inputs:
   githubToken:
     description: "Depreciado, não usar."
     required: false
-  chartPrefix:
-    description: "Prefixo para a localização das definições do Helm. É necessário incluir uma '/' no final do caminho"
-    required: false
-    default: ""
 
 runs:
   using: "composite"
@@ -25,4 +21,4 @@ runs:
       env:
         ENVIRONMENT: ${{ inputs.environment }}
         BOOTSTRAP_TOKEN: ${{ inputs.token }}
-        CHART_PREFIX: ${{ inputs.chartPrefix }}
+
