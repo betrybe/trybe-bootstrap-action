@@ -6,7 +6,7 @@ set -e
 sub_dir="./"
 if [[ "$PIPELINE_MODE" == "monorepo" ]]; then
   if [[ -z ${REPOSITORY_PATH} ]]; then
-    $REPOSITORY_PATH = ""
+    REPOSITORY_PATH=""
   fi
   sub_dir="$REPOSITORY_PATH$REPOSITORY"
 fi
