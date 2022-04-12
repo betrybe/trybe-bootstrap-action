@@ -56,7 +56,7 @@ echo "VERSION=$version" >> $GITHUB_ENV
 echo "CHART_FILE=$chart_file" >> $GITHUB_ENV
 echo "VALUES_FILE=$values_file" >> $GITHUB_ENV
 echo "PREVIEW_APP_HOSTNAME=$preview_app_hostname" >> $GITHUB_ENV
-echo "SECRET_SENTRY_RELEASE=$version" >> $GITHUB_ENV
+echo "SECRET_SENTRY_RELEASE=${GITHUB_SHA:0:9}" >> $GITHUB_ENV
 echo '
  _____            _
 /__   \_ __ _   _| |__   ___
