@@ -30,11 +30,15 @@ values_file="$sub_dir/chart/values-production.yaml"
 chart_file=""
 preview_app_hostname=""
 if [[ "$ENVIRONMENT" == "preview-app" ]]; then
-  version=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | tr [:upper:] [:lower:])
+  #version=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | tr [:upper:] [:lower:])
+  version=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | awk -F "/" '{print $4}'
   values_file="$sub_dir/chart/values-preview-apps.yaml"
 
   # Default hostname for preview-apps
   preview_app_hostname=$REPOSITORY-preview-app-$version.betrybe.dev
+
+  #echo "automation/refs/pull/4684/merge" | awk -F "/" '{print $4}'
+  #awk -F "/" '{print $4}'
 
 elif [[ "$ENVIRONMENT" == "staging" ]] || [[ "$ENVIRONMENT" == "homologation" ]]; then
   version="$ENVIRONMENT"
