@@ -31,7 +31,7 @@ chart_file=""
 preview_app_hostname=""
 if [[ "$ENVIRONMENT" == "preview-app" ]]; then
   version=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | tr [:upper:] [:lower:])
-  echo $(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | awk -F "/" '{print $4}')
+  aux=$(echo "${GITHUB_REF##*refs/heads/}" | tr '/_' '-' | awk -F "/" '{print $4}')
   values_file="$sub_dir/chart/values-preview-apps.yaml"
 
   # Default hostname for preview-apps
@@ -57,6 +57,7 @@ helm lint $sub_dir/chart/ --values $values_file
 # Setting environment variables.
 echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
 echo "VERSION=$version" >> $GITHUB_ENV
+echo "AUX=$aux" >> $GITHUB_ENV
 echo "CHART_FILE=$chart_file" >> $GITHUB_ENV
 echo "VALUES_FILE=$values_file" >> $GITHUB_ENV
 echo "PREVIEW_APP_HOSTNAME=$preview_app_hostname" >> $GITHUB_ENV
