@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+PIPELINE_REPOSITORY="betrybe/trybe-pipeline-template"
 
 # If the repository is a monorepo then the envvar `$PIPELINE_MODE` must
 # be set to "monorepo" in order to the pipeline work properly.
@@ -16,13 +17,22 @@ if [[ -z "$(command -v helm)" ]]; then
   sudo snap install helm --classic
 fi
 
-# Ensure that 'templates' folder is up-to-date
-echo "----------------------------"
-git clone https://x-access-token:$BOOTSTRAP_TOKEN@github.com/betrybe/trybe-pipeline-template.git \
-  && cp -fR trybe-pipeline-template/chart/templates $sub_dir/chart/ \
-  && echo "Using LIVE helm templates!" \
-  || echo "Using STATIC helm templates!"
-echo "----------------------------"
+# Check if we are using LIVE or STATIC helm templates.
+if [[ $TEMPLATE_MODE != "static" ]]; then
+
+  git clone https://x-access-token:$BOOTSTRAP_TOKEN@github.com/$PIPELINE_REPOSITORY.git \
+    && cp -fR trybe-pipeline-template/chart/templates $sub_dir/chart/
+  result=$?
+
+  if [[ $result -eq 0 ]]; then
+    echo -e "\nUsing LIVE helm templates!"
+  else
+    echo -e "\nHOLD HOLD HOLD\nCloning '$PIPELINE_REPOSITORY' has failed and \$TEMPLATE_MODE is not 'static'."
+    exit 1
+  fi
+else
+  echo -e "\nUsing STATIC helm templates! (forced by TEMPLATE_MODE=static)"
+fi
 
 # Section: Set Version
 version=${GITHUB_SHA:0:9}

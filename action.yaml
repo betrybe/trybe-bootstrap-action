@@ -1,4 +1,4 @@
-name: "Trybe Image Builder"
+name: "Trybe Bootstrap Action"
 author: "Trybe"
 description: "Action utilizada para configurar o ambiente para executar a integração contínua das aplicações da Trybe."
 inputs:
@@ -7,9 +7,6 @@ inputs:
     required: true
   token:
     description: "Personal Acess Token para acessos a sistemas do GitHub."
-    required: false
-  githubToken:
-    description: "Depreciado, não usar."
     required: false
 
 runs:
