@@ -40,7 +40,8 @@ values_file="$sub_dir/chart/values-production.yaml"
 chart_file=""
 preview_app_hostname=""
 if [[ "$ENVIRONMENT" == "preview-app" ]]; then
-  version=$(echo "${GITHUB_REF##*refs/heads/}" | awk -F "/" '{print $3}')
+  pr_number=$(echo "${GITHUB_REF##*refs/heads/}" | awk -F "/" '{print $3}')
+  version=${pr_number:-$version}
   values_file="$sub_dir/chart/values-preview-apps.yaml"
 
   # Default hostname for preview-apps
