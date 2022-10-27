@@ -21,8 +21,7 @@ fi
 # Check if we are using LIVE or STATIC helm templates.
 if [[ $TEMPLATE_MODE != "static" ]]; then
 
-  git clone https://x-access-token:$BOOTSTRAP_TOKEN@github.com/$PIPELINE_REPOSITORY.git \
-    && git checkout $PIPELINE_BRANCH \
+  git clone --branch $PIPELINE_BRANCH https://x-access-token:$BOOTSTRAP_TOKEN@github.com/$PIPELINE_REPOSITORY.git \
     && cp -fR trybe-pipeline-template/chart/templates $sub_dir/chart/
   result=$?
 
