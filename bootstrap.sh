@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 PIPELINE_REPOSITORY="betrybe/trybe-pipeline-template"
+PIPELINE_BRANCH=${PIPELINE_BRANCH:-"main"}
 
 # If the repository is a monorepo then the envvar `$PIPELINE_MODE` must
 # be set to "monorepo" in order to the pipeline work properly.
@@ -21,6 +22,7 @@ fi
 if [[ $TEMPLATE_MODE != "static" ]]; then
 
   git clone https://x-access-token:$BOOTSTRAP_TOKEN@github.com/$PIPELINE_REPOSITORY.git \
+    && git checkout $PIPELINE_BRANCH \
     && cp -fR trybe-pipeline-template/chart/templates $sub_dir/chart/
   result=$?
 
