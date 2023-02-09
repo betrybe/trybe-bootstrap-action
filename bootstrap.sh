@@ -21,9 +21,17 @@ fi
 # Check if we are using LIVE or STATIC helm templates.
 if [[ $TEMPLATE_MODE != "static" ]]; then
 
+  if [[ ! -d "$sub_dir/chart/" ]]; then
+    mkdir $sub_dir/chart/
+  fi
+
   git clone --branch $PIPELINE_BRANCH https://x-access-token:$BOOTSTRAP_TOKEN@github.com/$PIPELINE_REPOSITORY.git \
     && cp -fR trybe-pipeline-template/chart/templates $sub_dir/chart/
   result=$?
+
+  cp -f trybe-pipeline-template/chart/Chart.yaml "$sub_dir/chart/Chart.yaml"
+  cat "$sub_dir/chart/Chart.yaml" | sed -e "s/<% AppName %>/${REPOSITORY}/g" > "$sub_dir/chart/Chart.yaml"
+  cat "$sub_dir/chart/Chart.yaml" | sed -e "s/<% Description %>/${REPOSITORY}/g" > "$sub_dir/chart/Chart.yaml"
 
   if [[ $result -eq 0 ]]; then
     echo -e "\nUsing LIVE helm templates!"
@@ -38,7 +46,7 @@ fi
 # Section: Set Version
 version=${GITHUB_SHA:0:9}
 values_file="values-production.yaml"
-chart_file=""
+chart_file="$sub_dir/chart/"
 preview_app_hostname=""
 if [[ "$ENVIRONMENT" == "preview-app" ]]; then
   pr_number=$(echo "${GITHUB_REF##*refs/heads/}" | awk -F "/" '{print $3}')
@@ -51,7 +59,6 @@ if [[ "$ENVIRONMENT" == "preview-app" ]]; then
 elif [[ "$ENVIRONMENT" == "staging" ]] || [[ "$ENVIRONMENT" == "homologation" ]]; then
   version="$ENVIRONMENT"
   values_file="values-$ENVIRONMENT.yaml"
-  chart_file="$sub_dir/chart/"
 
 fi
 # Generate a helm "package" for preview apps and production
@@ -70,7 +77,7 @@ fi
 echo "$values_file_content" > values-from-infra-repo.yaml
 
 # Helm Linter
-helm lint $sub_dir/chart/ --values values-from-infra-repo.yaml
+helm lint "$sub_dir/chart/" --values values-from-infra-repo.yaml
 
 # Setting environment variables.
 echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
