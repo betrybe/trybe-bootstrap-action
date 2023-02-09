@@ -21,9 +21,22 @@ fi
 # Check if we are using LIVE or STATIC helm templates.
 if [[ $TEMPLATE_MODE != "static" ]]; then
 
+  if [[ ! -d "$sub_dir/chart" ]]; then
+    mkdir $sub_dir/chart
+  fi
+  if [[ ! -d "$sub_dir/chart/templates" ]]; then
+    mkdir $sub_dir/chart/templates
+  fi
+
   git clone --branch $PIPELINE_BRANCH https://x-access-token:$BOOTSTRAP_TOKEN@github.com/$PIPELINE_REPOSITORY.git \
     && cp -fR trybe-pipeline-template/chart/templates $sub_dir/chart/
   result=$?
+
+  chart_template=$(curl -s "https://x-access-token:$BOOTSTRAP_TOKEN@raw.githubusercontent.com/$PIPELINE_REPOSITORY/main/chart/Chart.yaml")
+  chart_template=$(echo "$chart_template" | sed -e "s/<% AppName %>/${REPOSITORY}/g" | sed -e "s/<% Description %>/${REPOSITORY}/g")
+
+  echo "$chart_template" > $sub_dir/chart/Chart.yaml
+  cat $sub_dir/chart/Chart.yaml
 
   if [[ $result -eq 0 ]]; then
     echo -e "\nUsing LIVE helm templates!"
@@ -38,7 +51,7 @@ fi
 # Section: Set Version
 version=${GITHUB_SHA:0:9}
 values_file="values-production.yaml"
-chart_file=""
+chart_file="$sub_dir/chart/"
 preview_app_hostname=""
 if [[ "$ENVIRONMENT" == "preview-app" ]]; then
   pr_number=$(echo "${GITHUB_REF##*refs/heads/}" | awk -F "/" '{print $3}')
@@ -51,26 +64,33 @@ if [[ "$ENVIRONMENT" == "preview-app" ]]; then
 elif [[ "$ENVIRONMENT" == "staging" ]] || [[ "$ENVIRONMENT" == "homologation" ]]; then
   version="$ENVIRONMENT"
   values_file="values-$ENVIRONMENT.yaml"
-  chart_file="$sub_dir/chart/"
 
 fi
-# Generate a helm "package" for preview apps and production
-if [[ "$ENVIRONMENT" == "preview-app" || "$ENVIRONMENT" == "production" ]]; then
-  chart_file=$(helm package $sub_dir/chart/ --app-version=$version | awk -F"/" '{print $NF}')
-fi
 
+# Get files from betrybe/infrastructure-projects
 echo "Values file: $values_file"
+
+values_file_content=$(curl -s "https://x-access-token:$BOOTSTRAP_TOKEN@raw.githubusercontent.com/betrybe/infrastructure-projects/main/$REPOSITORY/values.yaml")
+if [[ "$values_file_content" == *"404: Not Found"* ]]; then
+  echo "values.yaml não foi encontrado no em https://github.com/betrybe/infrastructure-projects/tree/main/$REPOSITORY"
+  exit 1
+fi
+echo "$values_file_content" > "$sub_dir/chart/values.yaml"
 
 values_file_content=$(curl -s "https://x-access-token:$BOOTSTRAP_TOKEN@raw.githubusercontent.com/betrybe/infrastructure-projects/main/$REPOSITORY/$values_file")
 if [[ "$values_file_content" == *"404: Not Found"* ]]; then
   echo "$values_file não foi encontrado no em https://github.com/betrybe/infrastructure-projects/tree/main/$REPOSITORY"
   exit 1
 fi
+echo "$values_file_content" > "$sub_dir/chart/$values_file"
 
-echo "$values_file_content" > values-from-infra-repo.yaml
+# Generate a helm "package" for preview apps and production
+if [[ "$ENVIRONMENT" == "preview-app" || "$ENVIRONMENT" == "production" ]]; then
+  chart_file=$(helm package $sub_dir/chart/ --app-version=$version | awk -F"/" '{print $NF}')
+fi
 
 # Helm Linter
-helm lint $sub_dir/chart/ --values values-from-infra-repo.yaml
+helm lint $sub_dir/chart/ --values "$sub_dir/chart/$values_file"
 
 # Setting environment variables.
 echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
