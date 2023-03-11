@@ -69,7 +69,7 @@ fi
 
 
 
-if [[ "$REPOSITORY" == "sorry-cypress" ]] || [[ "$REPOSITORY" == "projects-service" ]]
+if [[ "$REPOSITORY" == "sorry-cypress" ]] || [[ "$REPOSITORY" == "projects-service" ]] || [[ "$REPOSITORY" == "keycloak" ]]
 then
   echo "Values file: $sub_dir/chart/$values_file"
 else
